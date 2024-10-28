@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, ScrollView, Image, Alert, Dimensions } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,10 +7,13 @@ import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 import { Link, router } from 'expo-router';
 import {createUser} from '../../lib/appwrite'
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 
 
 const SignUp = () => {
+
+    const { setUser, setIsLoggedIn } = useGlobalContext();
 
     const [form, setForm] = useState({
         username: '',
@@ -21,15 +24,17 @@ const SignUp = () => {
     const [isSubmitting, SetIsSubmitting] = useState(false)
 
     const submit = async () => {
-     if( !form.username || !form.email || !form.password ) {
+     if( form.username === "" || form.email === "" || form.password === "") {
       Alert.alert('Error', 'Please fill in all the fields')
      }
 
      SetIsSubmitting(true)
      try {
       const result = await createUser(form.email, form.password, form.username)
-
       // set it to global state using context
+      setUser(result);
+      setIsLoggedIn(true);
+
       router.replace('/home');
       
      } catch ( error ) {
@@ -41,7 +46,11 @@ const SignUp = () => {
   return (
     <SafeAreaView className= "bg-primary h-full " >
       <ScrollView>
-        <View className='w-full justify-center min-h-[60vh] px-4 my-6'>
+        <View className='w-full flex justify-center h-full px-4 my-6'
+        style={{
+          minHeight: Dimensions.get("window").height - 100,
+        }}
+        >
             <Image 
             source={images.logo}
             resizeMode='contain'
@@ -79,14 +88,15 @@ const SignUp = () => {
            <CustomButton 
                       title="Sign Up"
                       handlePress={submit}
-                      containerStyles="mt-7" textStyles={undefined} isLoading={undefined}           />
+                      containerStyles="mt-7"  isLoading={isSubmitting} 
+           />
            <View className='justify-center pt-5 flex-row gap-2'>
                 <Text className='text-lg text-gray-100 font-pregular'>
                     Have an account already?
                 </Text>
                 <Link href="/sign-in" 
                 className="text-lg font-psemibold text-secondary">
-                    Sign in
+                    Login
                 </Link>
            </View>
         </View>
