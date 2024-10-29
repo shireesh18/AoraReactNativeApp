@@ -2,6 +2,7 @@ import { View, Text, FlatList, TouchableOpacity, Image, ImageBackground } from '
 import React, { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { icons } from '@/constants';
+import { ResizeMode, Video } from 'expo-av';
 
 const zoomIn = {
   0: {
@@ -20,18 +21,32 @@ const zoomOut = {
   }
 }
 
-const TrendingItem = ({ activeItem, item}) => {
+const TrendingItem = ({ activeItem, item }) => {
 
   const [play, setPlay] = useState(false);
-
-  console.log(activeItem.$id, item.$id);
 
   return (
     <Animatable.View className='mr-5' animation={activeItem === item.$id ? zoomIn: zoomOut }
     duration={500}
     >
-      { play ? (
-        <Text className='text-white'>Playing</Text>
+      { 
+
+      
+      
+      play ? (
+        
+        <Video
+        source={{ uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }}
+        className="w-52 h-72 rounded-[33px] mt-3 bg-white/10"
+        resizeMode={ResizeMode.CONTAIN}
+        useNativeControls
+        shouldPlay
+        onPlaybackStatusUpdate={(status) => {
+          if (status.didJustFinish) {
+            setPlay(false);
+          }
+        }}
+      />
       ): (
         <TouchableOpacity className='relative justify-center items-center'
         activeOpacity={0.7}
