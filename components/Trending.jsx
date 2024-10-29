@@ -4,6 +4,7 @@ import * as Animatable from 'react-native-animatable';
 import { icons } from '@/constants';
 import { ResizeMode, Video } from 'expo-av';
 
+
 const zoomIn = {
   0: {
     scale: 0.9
@@ -24,19 +25,16 @@ const zoomOut = {
 const TrendingItem = ({ activeItem, item }) => {
 
   const [play, setPlay] = useState(false);
-
   return (
     <Animatable.View className='mr-5' animation={activeItem === item.$id ? zoomIn: zoomOut }
     duration={500}
     >
       { 
 
-      
-      
       play ? (
         
         <Video
-        source={{ uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }}
+        source={{ uri: item.video }}
         className="w-52 h-72 rounded-[33px] mt-3 bg-white/10"
         resizeMode={ResizeMode.CONTAIN}
         useNativeControls
@@ -46,6 +44,8 @@ const TrendingItem = ({ activeItem, item }) => {
             setPlay(false);
           }
         }}
+        onLoadStart={() => console.log('on load start')}
+        onLoad={() => console.log('on')}
       />
       ): (
         <TouchableOpacity className='relative justify-center items-center'
