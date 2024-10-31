@@ -8,8 +8,11 @@ import EmptyState from '@/components/EmptyState';
 import { getAllPosts, getLatestPosts } from '@/lib/appwrite';
 import useAppwrite from '../../lib/useAppwrite';
 import VideoCard from '@/components/VideoCard';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Home = () => {
+
+  const { user, setUser, setIsLoogedIn } = useGlobalContext();
 
   const { data: posts, refetch, } = useAppwrite(getAllPosts);
 
@@ -39,7 +42,7 @@ const Home = () => {
                 Welcome back
               </Text>
               <Text className='text-2xl font-psemibold text-white'>
-                react native crash course
+                {user?.username ?? "Shireesh--"}
               </Text>
             </View>
             <View>

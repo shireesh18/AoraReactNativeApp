@@ -13,13 +13,12 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 const SignIn = () => {
 
     const { setUser, setIsLoggedIn } = useGlobalContext();
+    const [isSubmitting, SetIsSubmitting] = useState(false);
 
     const [form, setForm] = useState({
         email: '',
         password: ''
-    })
-
-    const [isSubmitting, SetIsSubmitting] = useState(false)
+    });
 
     const submit = async () => {
       if( form.email === "" || form.password === "" ) {
@@ -35,7 +34,7 @@ const SignIn = () => {
        // set it to global state using context
        setUser(result);
        setIsLoggedIn(true);
-       Alert.alert("Success", "User signed in successfully");
+      //  Alert.alert("Success", "User signed in successfully");
        router.replace('/home');
        
       } catch ( error ) {
@@ -78,7 +77,7 @@ const SignIn = () => {
            <CustomButton 
                       title="Sign In"
                       handlePress={submit}
-                      containerStyles="mt-7" textStyles={undefined} isLoading={undefined}           />
+                      containerStyles="mt-7"  isLoading={isSubmitting}           />
            <View className='justify-center pt-5 flex-row gap-2'>
                 <Text className='text-lg text-gray-100 font-pregular'>
                     Don't have account?
