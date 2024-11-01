@@ -5,10 +5,11 @@ import FormField from '@/components/FormField';
 import { Video, ResizeMode } from 'expo-av';
 import { icons } from '@/constants';
 import CustomButton from '@/components/CustomButton';
-import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { createVideo } from '@/lib/appwrite';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { ID } from 'react-native-appwrite';
 
 const Create = () => {
   const { user } = useGlobalContext();
@@ -28,10 +29,9 @@ const Create = () => {
     setUploading(true);
 
     try {
-
         await createVideo({
           ...form, 
-          userId : user.$id
+          userId : user?.$id ?? ID.unique()
         })
 
         Alert.alert('Sucess', 'video uploaded successfully')
@@ -52,23 +52,24 @@ const Create = () => {
   }
 
   const openPicker = async ( selectType ) => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: selectType === 'image' ? ['image/png', 'image/jpg'] : ['video/mp4', 'video/gif']
-    })
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: selectType === 'image' ? ImagePicker.MediaTypeOptions.Images : ImagePicker.MediaTypeOptions.Videos,
+      aspect: [4,3],
+      quality: 1,
+    });
+
     if(!result.canceled) {
       if(selectType === 'image') {
-        setForm({...Create.form, thumbnail: result.assets[0]})
-      } else if (selectType === 'video') {
-        setForm({...Create.form, video: result.assets[0]})
+        setForm({...form, thumbnail: result.assets[0]})
+      }  
+      if (selectType === 'video') {
+        setForm({...form, video: result.assets[0]});
       }
-    } else {
-      setTimeout( () => {
-        Alert.alert('Document picked', JSON.stringify(result, null, 2))
-      }, 100)
-    }
+    } 
   }
-
+  
   return (
+   
    <SafeAreaView className='bg-primary h-full'>
     <ScrollView className='px-4 my-6'>
       <Text className='text-2xl text-white font-psemibold'>
@@ -87,13 +88,13 @@ const Create = () => {
         </Text>
 
         <TouchableOpacity onPress={() => openPicker('video')}>
-          { form.video ? (
+          { 
+          
+          form.video ? (
             <Video  
             source={{ uri: form.video.uri }}
             className='w-full h-64 rounded-2xl'
-            useNativeControls
             resizeMode={ResizeMode.COVER}
-            isLooping
             />
           ) : (
             <View className='w-full h-40 px-4 bg-black-100 rounded-2xl justify-center items-center'>
